@@ -1,6 +1,10 @@
+# Author : Will Robinson
+
+
 import pygame 
 import constants as c
 from mario import *
+from level_one import *
 
 def game_exit():
 	pygame.quit()
@@ -24,6 +28,13 @@ class Game:
 		self.all_sprites = pygame.sprite.Group()
 		self.mario = Mario()
 		self.all_sprites.add(self.mario)
+		self.level_one = World()
+		for row in range(len(self.level_one.map)):
+			for column in range(len(self.level_one.map[row])):
+				tile = pygame.sprite.Sprite()
+				tile.image = self.level_one.textures[self.level_one.map[row][column]]
+				tile.rect = tile.image.get_rect()
+				self.all_sprites.add(tile.image)
 		self.run()
 
 	def run(self):
@@ -48,6 +59,10 @@ class Game:
 
 	def draw(self):
 		self.display.fill(c.BLACK)
+		# for row in range(c.HEIGHT):
+		# 	for column in range(c.WIDTH):
+		# 		# print(self.level_one.textures[self.level_one.map[0][0]])
+		# 		pygame.draw.rect(self.display, self.level_one.textures[self.level_one.map[row][column]], (column*c.TILE_WIDTH,row*c.TILE_HEIGHT,c.TILE_WIDTH,c.TILE_HEIGHT))
 		self.all_sprites.draw(self.display)
 		pygame.display.update()
 

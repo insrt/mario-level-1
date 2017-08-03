@@ -1,5 +1,8 @@
+# Author : Will Robinson
+
 import pygame 
 import constants as c
+
 vec = pygame.math.Vector2
 
 
@@ -20,7 +23,7 @@ class Mario(pygame.sprite.Sprite):
 		self.vel = vec(0, 0)
 		self.acc = vec(0, 0)
 		self.FACING_LEFT = False
-		self.BIG_MARIO = False
+		self.BIG_MARIO = True
 		self.FIRE_POWER = False
 		self.STAR_POWER = False
 		
@@ -35,11 +38,12 @@ class Mario(pygame.sprite.Sprite):
 		if keys[pygame.K_RIGHT]:
 			self.acc.x = c.MARIO_ACC
 
+		
 		#friction
 		self.acc += self.vel * c.MARIO_FRICTION
 		#equations of motion
 		self.vel += self.acc
-		if abs(self.vel.x) < 0.1:
+		if abs(self.vel.x) < 0.5:
 			self.vel.x = 0
 		self.pos += self.vel + 0.5 * self.acc
 
@@ -302,7 +306,6 @@ class Mario(pygame.sprite.Sprite):
 
 		return image
 
-	# def jump(self):
 
 
 	def animate(self):
@@ -317,7 +320,7 @@ class Mario(pygame.sprite.Sprite):
 				self.last_update = current_time
 				self.current_frame = (self.current_frame + 1) % 4
 				if self.vel.x > 0:
-					FACING_LEFT = False
+					self.FACING_LEFT = False
 					if not self.BIG_MARIO and not self.FIRE_POWER and not self.STAR_POWER:
 						self.image = self.right_normal_small_mario[self.current_frame]
 
@@ -335,7 +338,7 @@ class Mario(pygame.sprite.Sprite):
 					#implement star power sprites right here
 
 				else:
-					FACING_LEFT = True
+					self.FACING_LEFT = True
 					if not self.BIG_MARIO and not self.FIRE_POWER and not self.STAR_POWER:
 						self.image = self.left_normal_small_mario[self.current_frame]
 
@@ -360,7 +363,7 @@ class Mario(pygame.sprite.Sprite):
 					self.image = self.right_normal_small_mario[self.current_frame]
 
 				elif not self.BIG_MARIO and self.FIRE_POWER and not self.STAR_POWER:
-					self.image = self.right_normal_small_mario[self.current_frame]
+					self.image = self.right_fire_small_mario[self.current_frame]
 
 				#implement star power sprites right here
 
@@ -377,7 +380,7 @@ class Mario(pygame.sprite.Sprite):
 					self.image = self.left_normal_small_mario[self.current_frame]
 
 				elif not self.BIG_MARIO and self.FIRE_POWER and not self.STAR_POWER:
-					self.image = self.left_normal_small_mario[self.current_frame]
+					self.image = self.left_fire_small_mario[self.current_frame]
 
 				#implement star power sprites right here
 
