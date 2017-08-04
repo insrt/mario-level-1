@@ -31,10 +31,10 @@ class Game:
 		self.level_one = World()
 		for row in range(len(self.level_one.map)):
 			for column in range(len(self.level_one.map[row])):
-				tile = pygame.sprite.Sprite()
-				tile.image = self.level_one.textures[self.level_one.map[row][column]]
-				tile.rect = tile.image.get_rect()
-				self.all_sprites.add(tile.image)
+				self.level_one.image = self.level_one.textures[self.level_one.map[row][column]]
+				self.level_one.rect = self.level_one.image.get_rect()
+				self.all_sprites.add(self.level_one)
+		print(self.all_sprites)
 		self.run()
 
 	def run(self):
@@ -58,7 +58,7 @@ class Game:
 				self.running = False
 
 	def draw(self):
-		self.display.fill(c.BLACK)
+		self.display.fill(c.SKY_BLUE)
 		# for row in range(c.HEIGHT):
 		# 	for column in range(c.WIDTH):
 		# 		# print(self.level_one.textures[self.level_one.map[0][0]])

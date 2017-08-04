@@ -10,28 +10,30 @@ class World(pygame.sprite.Sprite):
 		self.spritesheet = pygame.image.load('sprites/tile_set.png')
 		self.load_images()
 		self.tile_map()
-		
+		# self.image = self.textures[self.map[0][1]]
+		# self.rect = self.image.get_rect()
+
 
 
 	def load_images(self):
 		self.textures = {
 		'brick' : self.get_image(208,0,16,16),
 		'ground_brick' : self.get_image(0,0,16,16),
-		'mystery_box' : [self.get_image(384,0,16,16), # Mystery box sequence     [0]
+		'mystery_box' : [self.get_image(384,0,16,16), # Mystery box sequence  [0]
 						 self.get_image(400,0,16,16), # Mystery box sequence  [1]
 						 self.get_image(416,0,16,16), # Mystery box sequence  [2]
 						 self.get_image(432,0,16,16)], # Opened mystery box   [3]
 
-		'coin' : [self.get_image(384,16,16,16), # Coin sequence    [0]
+		'coin' : [self.get_image(384,16,16,16), # Coin sequence  [0]
 				  self.get_image(400,16,16,16), # Coin sequence  [1]
 				  self.get_image(416,16,16,16)], # Coin sequence [2]
 
 		'step_block' : self.get_image(0,16,16,16),
 
-		'cloud' : [self.get_image(8,320,16,16), # Cloud left-half top [0]
-				   self.get_image(8,336,16,16), # Cloud left-half bottom [1]
-				   self.get_image(24,320,16,16),
-				   self.get_image(24,336,16,16)], # Cloud right-half [2]
+		'cloud' : [self.get_image(8,320,16,16), # Cloud left-half top       [0]
+				   self.get_image(8,336,16,16), # Cloud left-half bottom    [1]
+				   self.get_image(24,320,16,16), # Cloud rigt-half top      [2]
+				   self.get_image(24,336,16,16)], # Cloud right-half bottom [3]
 
 		'green_pipe' : [self.get_image(0,128,16,16), # Upward facing pipe left-top       [0]
 						self.get_image(0,144,16,16), # Upward facing pipe left-bottom    [1]
@@ -46,7 +48,8 @@ class World(pygame.sprite.Sprite):
 		}
 
 	def tile_map(self):
-		self.map = [['sky','brick']]
+		self.map = [['brick','sky','step_block']]
+		# print(self.textures['coin'][1])
 
 
 	def get_image(self, x, y, width, height):
