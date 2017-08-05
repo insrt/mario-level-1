@@ -3,7 +3,7 @@
 import pygame
 import constants as c
 
-class World(pygame.sprite.Sprite):
+class Textures(pygame.sprite.Sprite):
 
 	def __init__(self):
 		pygame.sprite.Sprite.__init__(self)
@@ -31,7 +31,7 @@ class World(pygame.sprite.Sprite):
 		'step_block' : self.get_image(0,16,16,16),
 
 		'cloud' : [self.get_image(8,320,16,16), # Cloud left-half top       [0]
-				   self.get_image(8,336,16,16), # Cloud left-half bottom    [1]
+				   self.get_image(8,336,16,16), # Cloud left-half bottom    [1]*
 				   self.get_image(24,320,16,16), # Cloud rigt-half top      [2]
 				   self.get_image(24,336,16,16)], # Cloud right-half bottom [3]
 
@@ -59,4 +59,15 @@ class World(pygame.sprite.Sprite):
 
 		return image
 
-
+class Tile(pygame.sprite.Sprite):
+	def __init__(self, game, texture,row,col):
+		self.groups = game.all_sprites, game.tiles
+		pygame.sprite.Sprite.__init__(self, self.groups)
+		self.game = game
+		self.image = texture
+		# self.image.set_colorkey(c.BLACK)
+		self.rect = self.image.get_rect()
+		self.x = row
+		self.y = col
+		self.rect.x = row*c.TILESIZE
+		self.rect.y = col*c.TILESIZE

@@ -19,7 +19,7 @@ class Mario(pygame.sprite.Sprite):
 		# self.image = pygame.Surface((30, 40))
 		# self.image.fill(c.RED)
 		self.rect = self.image.get_rect()
-		self.pos = vec(c.WIDTH/2, c.HEIGHT/2)
+		self.pos = vec(c.WIDTH/4, c.HEIGHT/3.25)
 		self.vel = vec(0, 0)
 		self.acc = vec(0, 0)
 		self.FACING_LEFT = False
