@@ -7,10 +7,12 @@ vec = pygame.math.Vector2
 
 
 class Mario(pygame.sprite.Sprite):
-	def __init__(self):
+	def __init__(self, game):
 		pygame.sprite.Sprite.__init__(self)
+		self.game = game
 		self.walking = False
 		self.jumping = False
+		self.colliding = False
 		self.current_frame = 0
 		self.last_update = 0
 		self.spritesheet = pygame.image.load('sprites/mario_bros.png')
@@ -19,35 +21,78 @@ class Mario(pygame.sprite.Sprite):
 		# self.image = pygame.Surface((30, 40))
 		# self.image.fill(c.RED)
 		self.rect = self.image.get_rect()
-		self.pos = vec(c.WIDTH/4, c.HEIGHT/3.25)
+		self.obstacle = False
+		self.pos = vec(c.WIDTH/4, c.HEIGHT/4)
 		self.vel = vec(0, 0)
 		self.acc = vec(0, 0)
+		self.jump_power = -3.0
+		self.jump_cut_mag = -2.0
 		self.FACING_LEFT = False
-		self.BIG_MARIO = True
+		self.BIG_MARIO = False
 		self.FIRE_POWER = False
 		self.STAR_POWER = False
-		
-
+	
+	def collide(self):
+		pass
 
 	def update(self):
 		self.animate()
-		self.acc = vec(0,0)
+		self.acc = vec(0,0.4)
 		keys = pygame.key.get_pressed()
 		if keys[pygame.K_LEFT]:
 			self.acc.x = -c.MARIO_ACC
 		if keys[pygame.K_RIGHT]:
 			self.acc.x = c.MARIO_ACC
-
+		if keys[pygame.K_z]:
+			self.vel.y = self.jump_power
 		
+
+  
+
 		#friction
-		self.acc += self.vel * c.MARIO_FRICTION
+		self.acc.x += self.vel.x * c.MARIO_FRICTION
 		#equations of motion
 		self.vel += self.acc
-		if abs(self.vel.x) < 0.5:
+		if abs(self.vel.x) < c.MARIO_ACC:
 			self.vel.x = 0
-		self.pos += self.vel + 0.5 * self.acc
 
-		self.rect.center = self.pos
+				
+
+		self.pos += self.vel + 0.5 * self.acc	
+
+		self.rect.midbottom = self.pos
+		self.colliding = False
+		for tile in self.game.obstacles:
+			
+			if self.rect.colliderect(tile):
+				self.colliding = True
+				if not self.FACING_LEFT and self.walking:
+					self.pos.x = tile.rect.left-8
+					self.vel.x = 0
+				elif self.FACING_LEFT and self.walking:
+					self.pos.x = tile.rect.right+8
+					self.vel.x = 0
+				elif self.jumping and self.pos.y < tile.rect.y-1:
+					self.jumping = False
+					self.pos.y = tile.rect.top
+					self.vel.y = 0
+		self.rect.midbottom = self.pos
+
+
+	def collide(self):
+		for t in self.game.obstacles:
+			if pygame.sprite.collide_rect(self, t):
+				if self.vel.x > 0: 
+					self.rect.right = t.rect.left
+					print('collide right')
+				if self.vel.x < 0:
+					self.rect.left = t.rect.right
+					print('collide left')
+				if self.vel.y > 0:
+					self.rect.bottom = t.rect.top
+					# self.vel.y = 0
+				if self.vel.y <= 0:
+					self.rect.top = t.rect.bottom
 
 	def load_images(self):
 		self.right_facing = []
@@ -303,10 +348,11 @@ class Mario(pygame.sprite.Sprite):
 		#retrieves image from spritesheet
 		image = pygame.Surface((width, height))
 		image.blit(self.spritesheet, (0,0), (x,y,width,height)) #TODO - upscale images
-
+		# pygame.mask.from_surface(image)
 		return image
 
-
+	def jump(self):
+		pass
 
 	def animate(self):
 		current_time = pygame.time.get_ticks()
@@ -315,6 +361,11 @@ class Mario(pygame.sprite.Sprite):
 			self.walking = True
 		else:
 			self.walking = False
+
+		if self.vel.y != 0:
+			self.jumping = True
+		else:
+			self.jumping = False
 		if self.walking:
 			if current_time > 50:
 				self.last_update = current_time
@@ -323,72 +374,103 @@ class Mario(pygame.sprite.Sprite):
 					self.FACING_LEFT = False
 					if not self.BIG_MARIO and not self.FIRE_POWER and not self.STAR_POWER:
 						self.image = self.right_normal_small_mario[self.current_frame]
-
+						self.rect = self.image.get_rect()
 					elif self.FIRE_POWER and not self.BIG_MARIO and not self.STAR_POWER:
 						self.image = self.right_fire_small_mario[self.current_frame]
-
+						self.rect = self.image.get_rect()
 					#implement star power sprites right here
 
 					elif self.BIG_MARIO and not self.FIRE_POWER and not self.STAR_POWER:
 						self.image = self.right_normal_big_mario[self.current_frame]
-
+						self.rect = self.image.get_rect()
 					elif self.BIG_MARIO and self.FIRE_POWER and not self.STAR_POWER:
 						self.image = self.right_fire_big_mario[self.current_frame]
-
+						self.rect = self.image.get_rect()
 					#implement star power sprites right here
 
 				else:
 					self.FACING_LEFT = True
 					if not self.BIG_MARIO and not self.FIRE_POWER and not self.STAR_POWER:
 						self.image = self.left_normal_small_mario[self.current_frame]
-
+						self.rect = self.image.get_rect()
 					elif self.FIRE_POWER and not self.BIG_MARIO and not self.STAR_POWER:
 						self.image = self.left_fire_small_mario[self.current_frame]
-
+						self.rect = self.image.get_rect()
 					#implement star power sprites right here
 
 					elif self.BIG_MARIO and not self.FIRE_POWER and not self.STAR_POWER:
 						self.image = self.left_normal_big_mario[self.current_frame]
-
+						self.rect = self.image.get_rect()
 					elif self.BIG_MARIO and self.FIRE_POWER and not self.STAR_POWER:
 						self.image = self.left_fire_big_mario[self.current_frame]
-
+						self.rect = self.image.get_rect()
 				#implement star power sprites right here
 
+
+		if self.jumping:
+			if not self.FACING_LEFT:
+				if not self.BIG_MARIO and not self.FIRE_POWER and not self.STAR_POWER:
+					self.image = self.right_normal_small_mario[5]
+					self.rect = self.image.get_rect()
+
+				elif self.FIRE_POWER and not self.BIG_MARIO and not self.STAR_POWER:
+					self.image = self.right_fire_small_mario[5]
+					self.rect = self.image.get_rect()
+
+				elif self.BIG_MARIO and not self.FIRE_POWER and not self.STAR_POWER:
+					self.image = self.right_normal_big_mario[5]
+
+				elif self.BIG_MARIO and self.FIRE_POWER and not self.STAR_POWER:
+					self.image = self.right_fire_big_mario[5]
+
+			else:
+				if not self.BIG_MARIO and not self.FIRE_POWER and not self.STAR_POWER:
+					self.image = self.left_normal_small_mario[5]
+					self.rect = self.image.get_rect()
+
+				elif self.FIRE_POWER and not self.BIG_MARIO and not self.STAR_POWER:
+					self.image = self.left_fire_small_mario[5]
+					self.rect = self.image.get_rect()
+
+				elif self.BIG_MARIO and not self.FIRE_POWER and not self.STAR_POWER:
+					self.image = self.left_normal_big_mario[5]
+
+				elif self.BIG_MARIO and self.FIRE_POWER and not self.STAR_POWER:
+					self.image = self.left_fire_big_mario[5]
 
 		if not self.walking and not self.jumping:
 			self.current_frame = 0
 			if not self.FACING_LEFT:
 				if not self.BIG_MARIO and not self.FIRE_POWER and not self.STAR_POWER:
 					self.image = self.right_normal_small_mario[self.current_frame]
-
+					self.rect = self.image.get_rect()
 				elif not self.BIG_MARIO and self.FIRE_POWER and not self.STAR_POWER:
 					self.image = self.right_fire_small_mario[self.current_frame]
-
+					self.rect = self.image.get_rect()
 				#implement star power sprites right here
 
 				elif self.BIG_MARIO and not self.FIRE_POWER and not self.STAR_POWER:
 					self.image = self.right_normal_big_mario[self.current_frame]
-
+					self.rect = self.image.get_rect()
 				elif self.BIG_MARIO and self.FIRE_POWER and not self.STAR_POWER:
 					self.image = self.right_fire_big_mario[self.current_frame]
-
+					self.rect = self.image.get_rect()
 				#implement star power sprites right here
 
 			else:
 				if not self.BIG_MARIO and not self.FIRE_POWER and not self.STAR_POWER:
 					self.image = self.left_normal_small_mario[self.current_frame]
-
+					self.rect = self.image.get_rect()
 				elif not self.BIG_MARIO and self.FIRE_POWER and not self.STAR_POWER:
 					self.image = self.left_fire_small_mario[self.current_frame]
-
+					self.rect = self.image.get_rect()
 				#implement star power sprites right here
 
 				elif self.BIG_MARIO and not self.FIRE_POWER and not self.STAR_POWER:
 					self.image = self.left_normal_big_mario[self.current_frame]
-
+					self.rect = self.image.get_rect()
 				elif self.BIG_MARIO and self.FIRE_POWER and not self.STAR_POWER:
 					self.image = self.left_fire_big_mario[self.current_frame]
-
+					self.rect = self.image.get_rect()
 				#implement star power sprites right here
 

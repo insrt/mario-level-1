@@ -30,10 +30,12 @@ class Textures(pygame.sprite.Sprite):
 
 		'step_block' : self.get_image(0,16,16,16),
 
-		'cloud' : [self.get_image(8,320,16,16), # Cloud left-half top       [0]
-				   self.get_image(8,336,16,16), # Cloud left-half bottom    [1]*
-				   self.get_image(24,320,16,16), # Cloud rigt-half top      [2]
-				   self.get_image(24,336,16,16)], # Cloud right-half bottom [3]
+		'cloud' : [self.get_image(0,320,16,16), # Cloud left-half top       [0]
+				   self.get_image(0,336,16,16), # Cloud left-half bottom    [1]
+				   self.get_image(16,320,16,16), # Cloud middle top         [2]
+				   self.get_image(16,336,16,16), # Cloud middle bottom      [3]
+				   self.get_image(32,320,16,16), # Cloud right-half top     [4]
+				   self.get_image(32,336,16,16)], # Cloud right-half bottom  [5]
 
 		'green_pipe' : [self.get_image(0,128,16,16), # Upward facing pipe left-top       [0]
 						self.get_image(0,144,16,16), # Upward facing pipe left-bottom    [1]
@@ -56,13 +58,18 @@ class Textures(pygame.sprite.Sprite):
 		#retrieves image from spritesheet
 		image = pygame.Surface((width, height))
 		image.blit(self.spritesheet, (0,0), (x,y,width,height)) #TODO - upscale images
-
-		return image
+		# pygame.mask.from_surface(image)
+		return image.convert_alpha()
 
 class Tile(pygame.sprite.Sprite):
-	def __init__(self, game, texture,row,col):
-		self.groups = game.all_sprites, game.tiles
+	def __init__(self,game,texture,row,col,floor=False):
+		print(texture)
+		if floor:
+			self.groups = game.all_sprites, game.tiles, game.floor
+		else:
+			self.groups = game.all_sprites, game.tiles, game.obstacles
 		pygame.sprite.Sprite.__init__(self, self.groups)
+
 		self.game = game
 		self.image = texture
 		# self.image.set_colorkey(c.BLACK)
@@ -71,3 +78,9 @@ class Tile(pygame.sprite.Sprite):
 		self.y = col
 		self.rect.x = row*c.TILESIZE
 		self.rect.y = col*c.TILESIZE
+
+	def getX(self):
+		return self.rect.x
+		
+	def getY(self):
+		return self.rect.y

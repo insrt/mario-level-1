@@ -1,0 +1,16 @@
+Collisions
+	top and bottom
+
+Jump
+	Hold jump key for longer jump
+	carry acc into a jump
+	max jump height (mario standard)
+
+Enemies
+	"Check points" spawning enemies
+
+Animation
+	Fix walking animation
+
+"Camera" Movement
+	Fix left side

@@ -32,8 +32,10 @@ class Game:
 		# start a new game
 		self.all_sprites = pygame.sprite.Group()
 		self.tiles = pygame.sprite.Group() #group for all texture tiles
-		self.mario = Mario()
-		self.all_sprites.add(self.mario)
+		self.floor = pygame.sprite.Group() #group for floor tiles -- necessary for collision testing
+		self.obstacles = pygame.sprite.Group()
+		self.mario = Mario(g)
+		
 		self.level_one = Textures()
 		for row, tiles in enumerate(self.level_one_data):
 			for col, tile in enumerate(tiles):
@@ -44,9 +46,8 @@ class Game:
 					Tile(self, self.level_one.textures['brick'], col, row)
 
 				if tile == 'a':
-					Tile(self, self.level_one.textures['ground_brick'], col, row)
-				# if tile == '.':
-				# 	Tile(self, self.level_one.textures['sky'], col, row)
+					Tile(self, self.level_one.textures['ground_brick'], col, row, True)
+				
 				if tile == 'p':
 					if self.level_one_data[row-1][col] != 'p' and tiles[col+1] == 'p':
 						Tile(self, self.level_one.textures['green_pipe'][0], col, row) #right top
@@ -61,10 +62,22 @@ class Game:
 						Tile(self, self.level_one.textures['green_pipe'][3], col, row) #left bottom
 
 				if tile == 'c':
-					Tile(self, self.level_one.textures['cloud'][0], col, row)
+					if self.level_one_data[row][col-1] != 'c' and self.level_one_data[row+1][col] == 'c':
+						Tile(self, self.level_one.textures['cloud'][0], col, row)
+					elif self.level_one_data[row][col-1] != 'c' and self.level_one_data[row+1][col] != 'c':
+						Tile(self, self.level_one.textures['cloud'][1], col, row)
+					elif self.level_one_data[row-1][col] != 'c' and self.level_one_data[row][col-1] == 'c' and self.level_one_data[row][col+1] == 'c':
+						Tile(self, self.level_one.textures['cloud'][2], col, row)
+					elif self.level_one_data[row-1][col] == 'c' and self.level_one_data[row][col-1] == 'c' and self.level_one_data[row][col+1] == 'c':
+						Tile(self, self.level_one.textures['cloud'][3], col, row)
+					elif self.level_one_data[row+1][col] == 'c' and self.level_one_data[row][col+1] != 'c':
+						Tile(self, self.level_one.textures['cloud'][4], col, row)
+					elif self.level_one_data[row][col+1] != 'c' and self.level_one_data[row+1][col] != 'c':
+						Tile(self, self.level_one.textures['cloud'][5], col, row)
 
 				if tile == 's':
 					Tile(self, self.level_one.textures['step_block'], col, row)
+		self.all_sprites.add(self.mario)
 		self.run()
 
 	def run(self):
@@ -80,15 +93,24 @@ class Game:
 		self.all_sprites.update()
 		# self.tiles.update()
 
-		#scroll window if mario reaches 3/4 mark on screen
-		if self.mario.rect.right >= c.WIDTH/2.75:
+		#scroll window if mario* reaches 3/4 mark on screen
+		if not self.mario.colliding and self.mario.rect.right >= c.WIDTH/2.75 and not self.mario.FACING_LEFT:
 			 self.mario.pos.x += -self.mario.vel.x
 			 for tile in self.tiles:
-			 	tile.rect.x += -self.mario.vel.x
-		elif self.mario.rect.left < c.WIDTH:
-			for tile in self.tiles:
-				tile.rect.x += 0
+			 	tile.rect.x += -(abs(self.mario.vel.x))
+		# elif self.mario.rect.x < c.WIDTH:
+		# 	for tile in self.tiles:
+		# 		tile.rect.x += 0
 
+		#collisions
+		floor_collide = pygame.sprite.spritecollide(self.mario, self.floor, False)
+		if floor_collide:
+			self.mario.pos.y = floor_collide[0].rect.top + 1
+			self.mario.vel.y = 0
+			self.mario.pos.x += self.mario.vel.x + 0.5 * self.mario.acc.x
+		
+		# collide = pygame.sprite.spritecollideany(self.mario, self.obstacles,collided=None)
+		# print(collide)
 
 	def events(self):
 		#game loop events
@@ -101,6 +123,7 @@ class Game:
 	def draw(self):
 		self.display.fill(c.SKY_BLUE)
 		self.all_sprites.draw(self.display)
+
 		pygame.display.update()
 
 	def start_screen(self):

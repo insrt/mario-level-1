@@ -4,8 +4,8 @@ WIDTH = 800
 HEIGHT = 600
 FPS = 30
 # Player properties -- probably need to change these to be consistent with the game
-MARIO_ACC = 0.5
-MARIO_FRICTION = -0.09
+MARIO_ACC = 0.175
+MARIO_FRICTION = -0.1
 
 BLACK = (0,0,0)
 WHITE = (255,255,255)
