@@ -46,7 +46,18 @@ class Textures(pygame.sprite.Sprite):
 						self.get_image(48,128,16,16), # Left facing pipe right-top       [6]
 						self.get_image(48,144,16,16)], # Left facing pipe right-bottom   [7]
 
-		'sky' : self.get_image(48,328,16,16)
+		'sky' : self.get_image(48,328,16,16),
+
+		'bush' : [self.get_image(176,144,16,16), # bush left   [0]
+				  self.get_image(192,144,16,16), # bush middle [1]
+				  self.get_image(208,144,16,16)], # bush right [2]
+
+		'hill' : [self.get_image(128,128,16,16), # left-side slant    [0]
+				  self.get_image(128,144,16,16), # right corner dots  [1]
+				  self.get_image(144,128,16,16), # top curve          [2]
+				  self.get_image(144,144,16,16), # solid green        [3]
+				  self.get_image(160,128,16,16), # right-side slant   [4]
+				  self.get_image(160,144,16,16)], # left corner dots  [5]
 		}
 
 	def tile_map(self):
@@ -57,18 +68,20 @@ class Textures(pygame.sprite.Sprite):
 	def get_image(self, x, y, width, height):
 		#retrieves image from spritesheet
 		image = pygame.Surface((width, height))
+		image.fill(c.SKY_BLUE)
 		image.blit(self.spritesheet, (0,0), (x,y,width,height)) #TODO - upscale images
 		# pygame.mask.from_surface(image)
-		return image.convert_alpha()
+		return image
 
 class Tile(pygame.sprite.Sprite):
-	def __init__(self,game,texture,row,col,floor=False):
-		print(texture)
+	def __init__(self,game,texture,row,col,floor=False, obstacle=True):
 		if floor:
 			self.groups = game.all_sprites, game.tiles, game.floor
+		elif not obstacle:
+			self.groups = game.all_sprites, game.tiles
 		else:
 			self.groups = game.all_sprites, game.tiles, game.obstacles
-		pygame.sprite.Sprite.__init__(self, self.groups)
+		pygame.sprite.Sprite.__init__(self, self.groups) 
 
 		self.game = game
 		self.image = texture

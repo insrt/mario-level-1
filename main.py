@@ -63,20 +63,41 @@ class Game:
 
 				if tile == 'c':
 					if self.level_one_data[row][col-1] != 'c' and self.level_one_data[row+1][col] == 'c':
-						Tile(self, self.level_one.textures['cloud'][0], col, row)
+						Tile(self, self.level_one.textures['cloud'][0], col, row, False, False)
 					elif self.level_one_data[row][col-1] != 'c' and self.level_one_data[row+1][col] != 'c':
-						Tile(self, self.level_one.textures['cloud'][1], col, row)
+						Tile(self, self.level_one.textures['cloud'][1], col, row, False, False)
 					elif self.level_one_data[row-1][col] != 'c' and self.level_one_data[row][col-1] == 'c' and self.level_one_data[row][col+1] == 'c':
-						Tile(self, self.level_one.textures['cloud'][2], col, row)
+						Tile(self, self.level_one.textures['cloud'][2], col, row, False, False)
 					elif self.level_one_data[row-1][col] == 'c' and self.level_one_data[row][col-1] == 'c' and self.level_one_data[row][col+1] == 'c':
-						Tile(self, self.level_one.textures['cloud'][3], col, row)
+						Tile(self, self.level_one.textures['cloud'][3], col, row, False, False)
 					elif self.level_one_data[row+1][col] == 'c' and self.level_one_data[row][col+1] != 'c':
-						Tile(self, self.level_one.textures['cloud'][4], col, row)
+						Tile(self, self.level_one.textures['cloud'][4], col, row, False, False)
 					elif self.level_one_data[row][col+1] != 'c' and self.level_one_data[row+1][col] != 'c':
-						Tile(self, self.level_one.textures['cloud'][5], col, row)
+						Tile(self, self.level_one.textures['cloud'][5], col, row, False, False)
 
 				if tile == 's':
 					Tile(self, self.level_one.textures['step_block'], col, row)
+
+				if tile == 'b':
+					if self.level_one_data[row][col-1] != 'b':
+						Tile(self, self.level_one.textures['bush'][0], col, row, False, False)
+					elif self.level_one_data[row][col+1] == 'b':
+						Tile(self, self.level_one.textures['bush'][1], col, row, False, False)
+					else:
+						Tile(self, self.level_one.textures['bush'][2], col, row, False, False)
+				if tile == 'h':
+					if self.level_one_data[row][col-1] != 'h' and self.level_one_data[row-1][col] != 'h' and self.level_one_data[row][col+1] == 'h':
+						Tile(self, self.level_one.textures['hill'][0], col, row, False, False)
+					elif self.level_one_data[row][col+2] == 'h' and self.level_one_data[row][col+2] == 'h':
+						Tile(self, self.level_one.textures['hill'][3], col, row, False, False)
+					elif self.level_one_data[row][col+1] == 'h' and self.level_one_data[row][col-2] != 'h' and self.level_one_data[row][col-1] == 'h':
+						Tile(self, self.level_one.textures['hill'][1], col, row, False, False)
+					elif self.level_one_data[row][col+2] != 'h' and self.level_one_data[row][col-1] == 'h' and self.level_one_data[row][col+1] == 'h': #fix right corner dots
+						Tile(self, self.level_one.textures['hill'][5], col, row, False, False)
+					elif self.level_one_data[row][col+1] != 'h' and self.level_one_data[row-1][col] != 'h' and self.level_one_data[row][col-1] == 'h':
+						Tile(self, self.level_one.textures['hill'][4], col, row, False, False)
+					else: 
+						Tile(self, self.level_one.textures['hill'][2], col, row, False, False)
 		self.all_sprites.add(self.mario)
 		self.run()
 
@@ -94,10 +115,11 @@ class Game:
 		# self.tiles.update()
 
 		#scroll window if mario* reaches 3/4 mark on screen
-		if not self.mario.colliding and self.mario.rect.right >= c.WIDTH/2.75 and not self.mario.FACING_LEFT:
-			 self.mario.pos.x += -self.mario.vel.x
-			 for tile in self.tiles:
-			 	tile.rect.x += -(abs(self.mario.vel.x))
+		if not self.mario.colliding:
+			if self.mario.rect.right >= c.WIDTH/2.75 and not self.mario.FACING_LEFT:
+				 self.mario.pos.x += -self.mario.vel.x
+				 for tile in self.tiles:
+				 	tile.rect.x += -(abs(self.mario.vel.x))
 		# elif self.mario.rect.x < c.WIDTH:
 		# 	for tile in self.tiles:
 		# 		tile.rect.x += 0

@@ -367,7 +367,7 @@ class Mario(pygame.sprite.Sprite):
 		else:
 			self.jumping = False
 		if self.walking:
-			if current_time > 50:
+			if current_time > 500:
 				self.last_update = current_time
 				self.current_frame = (self.current_frame + 1) % 4
 				if self.vel.x > 0:
